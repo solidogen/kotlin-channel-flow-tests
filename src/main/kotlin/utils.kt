@@ -2,7 +2,7 @@ import mu.KotlinLogging
 
 val logger = KotlinLogging.logger {}
 
-class SampleItem
+data class SampleItem(val i: Int)
 
 fun keepProcessAlive() {
     while (true) Unit

@@ -15,6 +15,9 @@ fun main() {
     keepProcessAlive()
 }
 
+/**
+ * This always skips first item, even after onStart. Not safe to use
+ * */
 @FlowPreview
 @ExperimentalCoroutinesApi
 class ArrayBroadcastApp : CoroutineScope {
@@ -34,21 +37,20 @@ class ArrayBroadcastApp : CoroutineScope {
     private fun subscribe() {
         channel.asFlow()
             .onStart {
-                logger.info("flow subscribed")
+                logger.info("flow onStart")
             }
             .onEach {
                 logger.info("item collected: $it")
                 coroutineContext.cancel()
-                exitProcess(0)
             }
             .launchIn(this)
         logger.info("launchIn called")
     }
 
     private suspend fun publish() {
-        while (true) {
+        repeat(1000) { i ->
             try {
-                val sampleItem = SampleItem()
+                val sampleItem = SampleItem(i = i)
                 logger.info("publishing item: $sampleItem")
                 channel.send(sampleItem)
             } catch (e: Throwable) {

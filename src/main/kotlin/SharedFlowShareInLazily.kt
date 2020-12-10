@@ -3,31 +3,35 @@ import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
 
 fun main() {
-    SharedFlowApp()
+    SharedFlowShareInLazily()
     keepProcessAlive()
 }
 
 /**
- * Shared flow itself doesn't make it magically work. I need to take a cold flow and share it with shareIn
- * and set sharingStarted to lazily (see other sample)
+ * This works like I wanted to, but we need cold flow first, to share it hotly when first subscriber appears.
+ * I had wrong approach to this.
  * */
-class SharedFlowApp : CoroutineScope {
+class SharedFlowShareInLazily : CoroutineScope {
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default
 
-    private val sharedFlow: MutableSharedFlow<SampleItem> = MutableSharedFlow()
-    private val flow: SharedFlow<SampleItem> = sharedFlow
+    private val publishFlow: Flow<SampleItem> = flow {
+        repeat(1000) { i ->
+            val sampleItem = SampleItem(i = i)
+            logger.info("publishing item: $sampleItem")
+            emit(sampleItem)
+        }
+    }
 
     init {
         launch {
             logger.info("app init")
             subscribe()
-            publish()
         }
     }
 
     private fun subscribe() {
-        flow
+        publishFlow.shareIn(this, SharingStarted.Lazily)
             .onSubscription {
                 logger.info("flow onSubscription")
             }
@@ -39,13 +43,5 @@ class SharedFlowApp : CoroutineScope {
             }
             .launchIn(this)
         logger.info("launchIn called")
-    }
-
-    private suspend fun publish() {
-        repeat(1000) { i ->
-            val sampleItem = SampleItem(i = i)
-            logger.info("publishing item: $sampleItem")
-            sharedFlow.emit(sampleItem)
-        }
     }
 }
