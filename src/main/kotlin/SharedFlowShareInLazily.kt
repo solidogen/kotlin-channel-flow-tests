@@ -8,8 +8,8 @@ fun main() {
 }
 
 /**
- * This works like I wanted to, but we need cold flow first, to share it hotly when first subscriber appears.
- * I had wrong approach to this.
+ * This works good as well, but requires additional setup and shareIn scope.
+ * SharedFlowApp approach is enough with yield()
  * */
 class SharedFlowShareInLazily : CoroutineScope {
 
