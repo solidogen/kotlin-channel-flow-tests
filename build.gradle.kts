@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.21"
 }
 
 group = "me.user"
@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 
-val coroutinesVersion = "1.4.1"
+val coroutinesVersion = "1.4.2"
 
 dependencies {
     testImplementation(kotlin("test-junit"))
